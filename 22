@@ -583,7 +583,7 @@ NR.MouseButton1Click:Connect(function()
     end)
 end)
 
-NR_2.MouseButton1Click:Connect(function()
+nrld.MouseButton1Click:Connect(function()
 
     local success, err = pcall(function()
         local scriptToRun = loadstring(game:HttpGet('https://pastefy.app/9DhSVisU/raw'))()
