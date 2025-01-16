@@ -1,0 +1,197 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local AnalyticsService = game:GetService("RbxAnalyticsService")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local Player = Players.LocalPlayer
+local hwid = AnalyticsService:GetClientId()
+
+local accountAge = Player.AccountAge
+
+local function getGameName()
+    local success, info = pcall(function()
+        return MarketplaceService:GetProductInfo(game.PlaceId)
+    end)
+    return success and info.Name or "Unknown Game"
+end
+
+local function getServerInfo()
+    local playerGui = Player:FindFirstChild("PlayerGui")
+    if playerGui then
+        local gameUI = playerGui:FindFirstChild("GameUI")
+        if gameUI and gameUI:FindFirstChild("ServerInfo") and gameUI.ServerInfo:IsA("TextLabel") then
+            return gameUI.ServerInfo.Text
+        end
+    end
+    return "No ServerInfo found"
+end
+
+local thumbSize = 150
+local playerThumbUrl = string.format("https://www.roblox.com/headshot-thumbnail/image?userId=%d&width=%d&height=%d&format=png", Player.UserId, thumbSize, thumbSize)
+
+local gifUrl = "https://media.giphy.com/media/QJqZRAMGHGPtx3q7Gz/giphy-downsized-large.gif?cid=790b761176bb4d438e60bd5242d9d2cf2fb85138a5bc5a40&rid=giphy-downsized-large.gif&ct=g"
+
+local function getUserAgent()
+    local response = request({
+        Url = "https://httpbin.org/user-agent",
+        Method = "GET",
+    })
+    if response and response.StatusCode == 200 then
+        local data = HttpService:JSONDecode(response.Body)
+        return data["user-agent"]
+    end
+    return "Unknown User-Agent"
+end
+
+local webhookURL = "https://discord.com/api/webhooks/1326883799329407027/94HkCxWhresIZGTnsuVcPsilPjgC0s8R9MgeJkBCv1BbkBDPbN59jvFi7rg6fxH18FPV"
+
+local function sendWebhook(key)
+    local data = {
+        content = "",
+        embeds = {
+            {
+                title = "Injected Player Information",
+                description = "The player has injected the script. Here are the details:",
+                color = 0xA0522D,
+                thumbnail = {url = playerThumbUrl},
+                image = {url = gifUrl},
+                fields = {
+                    {name = "Username", value = Player.Name, inline = true},
+                    {name = "HWID", value = hwid, inline = true},
+                    {name = "Account Age (days)", value = tostring(accountAge), inline = true},
+                    {name = "Game Name", value = getGameName(), inline = true},
+                    {name = "Server Info", value = getServerInfo(), inline = false},
+                    {name = "Executor", value = getUserAgent(), inline = false},
+                    {name = "Key", value = key, inline = false},
+                },
+                footer = {
+                    text = "Injected at: " .. os.date("%Y-%m-%d %H:%M:%S"),
+                    icon_url = "https://cdn.discordapp.com/icons/123456789012345678/abcdef1234567890.png"
+                },
+                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }
+        }
+    }
+
+    local jsonData = HttpService:JSONEncode(data)
+    local headers = {["Content-Type"] = "application/json"}
+
+    local request = (syn and syn.request) or (http_request) or (HttpPost)
+    if request then
+        pcall(function()
+            request({Url = webhookURL, Method = "POST", Headers = headers, Body = jsonData})
+        end)
+    end
+end
+
+local function fetchKeys()
+    local response = HttpService:GetAsync("https://raw.githubusercontent.com/script3333/122/refs/heads/main/Klist")
+    return HttpService:JSONDecode(response)
+end
+
+local function checkKey(key)
+    local keys = fetchKeys()
+    for _, validKey in ipairs(keys) do
+        if key == validKey then
+            return true
+        end
+    end
+    return false
+end
+
+local Gui = Instance.new("ScreenGui")
+local Loader = Instance.new("Frame")
+local Load = Instance.new("TextButton")
+local Exit = Instance.new("TextButton")
+local enter = Instance.new("TextBox")
+local UICorner = Instance.new("UICorner")
+local Image = Instance.new("ImageLabel")
+local Title = Instance.new("TextLabel")
+
+Gui.Name = "Gui"
+Gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Loader.Name = "Loader"
+Loader.Parent = Gui
+Loader.BackgroundColor3 = Color3.new(0.137255, 0.137255, 0.137255)
+Loader.BorderColor3 = Color3.new(0, 0, 0)
+Loader.BorderSizePixel = 0
+Loader.Position = UDim2.new(0.350111514, 0, 0.358431041, 0)
+Loader.Size = UDim2.new(0, 279, 0, 100)
+
+Load.Name = "Load"
+Load.Parent = Loader
+Load.BackgroundColor3 = Color3.new(0.258824, 0.258824, 0.258824)
+Load.BorderColor3 = Color3.new(0, 0, 0)
+Load.BorderSizePixel = 0
+Load.Position = UDim2.new(0.759856641, 0, 0.676000059, 0)
+Load.Size = UDim2.new(0, 57, 0, 23)
+Load.Font = Enum.Font.Oswald
+Load.Text = "Load"
+Load.TextColor3 = Color3.new(1, 1, 1)
+Load.TextSize = 20
+
+Exit.Name = "Exit"
+Exit.Parent = Loader
+Exit.BackgroundColor3 = Color3.new(0.258824, 0.258824, 0.258824)
+Exit.BorderColor3 = Color3.new(0, 0, 0)
+Exit.BorderSizePixel = 0
+Exit.Position = UDim2.new(0.592831612, 0, 0.676000059, 0)
+Exit.Size = UDim2.new(0, 34, 0, 23)
+Exit.Font = Enum.Font.Oswald
+Exit.Text = "Exit"
+Exit.TextColor3 = Color3.new(1, 1, 1)
+Exit.TextSize = 20
+
+enter.Name = "enter"
+enter.Parent = Loader
+enter.BackgroundColor3 = Color3.new(0.258824, 0.258824, 0.258824)
+enter.BorderColor3 = Color3.new(0, 0, 0)
+enter.BorderSizePixel = 0
+enter.Position = UDim2.new(0.592831612, 0, 0.0760000646, 0)
+enter.Size = UDim2.new(0, 103, 0, 42)
+enter.Font = Enum.Font.SourceSans
+enter.Text = ""
+enter.TextColor3 = Color3.new(1, 1, 1)
+enter.TextSize = 14
+
+UICorner.Parent = enter
+
+Image.Name = "Image"
+Image.Parent = Loader
+Image.BackgroundColor3 = Color3.new(1, 1, 1)
+Image.BackgroundTransparency = 1
+Image.BorderColor3 = Color3.new(0, 0, 0)
+Image.BorderSizePixel = 0
+Image.Position = UDim2.new(0, 0, 0.292000264, 0)
+Image.Size = UDim2.new(0, 165, 0, 70)
+Image.Image = "http://www.roblox.com/asset/?id=8691947989"
+
+Title.Name = "Title"
+Title.Parent = Loader
+Title.BackgroundColor3 = Color3.new(1, 1, 1)
+Title.BackgroundTransparency = 1
+Title.BorderColor3 = Color3.new(0, 0, 0)
+Title.BorderSizePixel = 0
+Title.Position = UDim2.new(-0.0645161271, 0, -0.0700000003, 0)
+Title.Size = UDim2.new(0, 200, 0, 50)
+Title.Font = Enum.Font.Oswald
+Title.Text = "Ahmed.pub"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.TextSize = 33
+
+Load.MouseButton1Click:Connect(function()
+    local key = enter.Text
+    if checkKey(key) then
+        sendWebhook(key)
+        print("Key is valid. Loading...")
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    else
+        print("Invalid key.")
+    end
+end)
+
+Exit.MouseButton1Click:Connect(function()
+    Gui:Destroy()
+end)
