@@ -5,12 +5,12 @@ local function loadKeysTable(url)
         return game:HttpGet(url, true) 
     end)
     if not success then
-        error("!!!!!"))
+        error("!!!!!")
     end
 
     local func, err = loadstring(response)
     if not func then
-        error("!!!!!"))
+        error("!!!!!")
     end
     return func()
 end
@@ -84,17 +84,17 @@ TextButton.MouseButton1Click:Connect(function()
         TextLabel.Text = "Access Granted"
 
         local success, response = pcall(function()
-            return game:HttpGet('loadstring(game:HttpGet('https://raw.githubusercontent.com/norma759/cas/refs/heads/main/drawin'))()')
+            return game:HttpGet('loadstring(game:HttpGet("https://raw.githubusercontent.com/norma759/cas/refs/heads/main/drawin"))()')
         end)
         if success then
             local func, err = loadstring(response)
             if func then
                 func()
             else
-                error("!!!!"))
+                error("!!!!")
             end
         else
-            error("!!!!!"))
+            error("!!!!!")
         end
 
         Key:Destroy() 
@@ -103,5 +103,5 @@ TextButton.MouseButton1Click:Connect(function()
         print("!!!!!!!!")
         TextLabel.Text = "Access Denied"
         TextLabel.TextColor3 = Color3.new(1, 0, 0) 
+end
 end)
-
