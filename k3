@@ -1,0 +1,107 @@
+local keysTableURL = "https://raw.githubusercontent.com/script3333/122/refs/heads/main/Klist"
+
+local function loadKeysTable(url)
+    local success, response = pcall(function()
+        return game:HttpGet(url, true) 
+    end)
+    if not success then
+        error("!!!!!")
+    end
+
+    local func, err = loadstring(response)
+    if not func then
+        error("!!!!!")
+    end
+    return func()
+end
+
+local function checkKey(key, keysTable)
+    for _, validKey in ipairs(keysTable) do
+        if validKey == key then
+            return true
+        end
+    end
+    return false
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+local Key = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local TextLabel = Instance.new("TextLabel")
+local TextButton = Instance.new("TextButton")
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Key.Name = "Key"
+Key.Parent = ScreenGui
+Key.BackgroundColor3 = Color3.new(0.0470588, 0.0470588, 0.0470588)
+Key.BorderColor3 = Color3.new(0, 0, 0)
+Key.BorderSizePixel = 0
+Key.Position = UDim2.new(0.47897622, 0, 0.466080397, 0)
+Key.Size = UDim2.new(0, 211, 0, 50)
+
+TextBox.Parent = Key
+TextBox.BackgroundColor3 = Color3.new(0.101961, 0.101961, 0.101961)
+TextBox.BorderColor3 = Color3.new(0, 0, 0)
+TextBox.BorderSizePixel = 0
+TextBox.Position = UDim2.new(0.497630328, 0, 0, 0)
+TextBox.Size = UDim2.new(0, 106, 0, 50)
+TextBox.Font = Enum.Font.SourceSans
+TextBox.Text = "keyhere"
+TextBox.TextColor3 = Color3.new(1, 1, 1)
+TextBox.TextSize = 14
+
+TextLabel.Parent = Key
+TextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+TextLabel.BackgroundTransparency = 1
+TextLabel.BorderColor3 = Color3.new(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(-0.241706163, 0, 0, 0)
+TextLabel.Size = UDim2.new(0, 200, 0, 50)
+TextLabel.Font = Enum.Font.Oswald
+TextLabel.Text = "Lancet.net"
+TextLabel.TextColor3 = Color3.new(1, 1, 1)
+TextLabel.TextSize = 27
+
+TextButton.Parent = Key
+TextButton.BackgroundColor3 = Color3.new(0.0470588, 0.0470588, 0.0470588)
+TextButton.BorderColor3 = Color3.new(0, 0, 0)
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(0, 0, 1, 0)
+TextButton.Size = UDim2.new(0, 210, 0, 18)
+TextButton.Font = Enum.Font.Michroma
+TextButton.Text = "Login"
+TextButton.TextColor3 = Color3.new(1, 1, 1)
+TextButton.TextSize = 17
+
+TextButton.MouseButton1Click:Connect(function()
+    local enteredKey = TextBox.Text 
+    local keysTable = loadKeysTable(keysTableURL) 
+
+    if checkKey(enteredKey, keysTable) then
+        print("!!!")
+        TextLabel.Text = "Access Granted"
+
+        local success, response = pcall(function()
+            return game:HttpGet('https://raw.githubusercontent.com/norma759/cas/refs/heads/main/drawin')
+        end)
+        if success then
+            local func, err = loadstring(response)
+            if func then
+                func()
+            else
+                error("!!!!")
+            end
+        else
+            error("!!!!!")
+        end
+
+        Key:Destroy() 
+        
+    else
+        print("!!!!!!!!")
+        TextLabel.Text = "Access Denied"
+        TextLabel.TextColor3 = Color3.new(1, 0, 0) 
+end
+end)
